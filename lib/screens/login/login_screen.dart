@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, use_key_in_widget_constructors, prefer_const_literals_to_create_immutables
 
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_scale/services/rest_api.dart';
 
@@ -72,13 +73,45 @@ class _LoginScreenState extends State<LoginScreen> {
                     width: 200,
                     child: ElevatedButton(
                       onPressed: () async {
-                        // Navigator.pushReplacementNamed(context, '/dashboard');
                         // เช็คว่าป้อนค่าในฟอร์มครบหรือไม่
                         if(formKey.currentState!.validate()) {
                           formKey.currentState!.save();
 
-                          print(_username);
-                          print(_password);
+                          // print(_username);
+                          // print(_password);
+                          // เรียกใช้งาน LoginAPI
+                          var response = await CallAPI().loginAPI(
+                            {
+                              "username": _username,
+                              "password": _password
+                            }
+                          );
+
+                          var body = json.decode(response.body);
+
+                          if(body['status'] == 'success'){
+                            Navigator.pushReplacementNamed(context, '/dashboard');
+                          }else{
+                            AlertDialog alert = AlertDialog(
+                              title: Text("มีข้อผิดพลาด"),
+                              content: Text("ข้อมูลเข้าระบบไม่ถูกต้อง"),
+                              actions: [
+                                TextButton(
+                                  onPressed: (){
+                                    Navigator.pop(context);
+                                  }, 
+                                  child: Text("OK")
+                                )
+                              ],
+                            );
+
+                            showDialog(
+                              context: context, 
+                              builder: (BuildContext context) {
+                                return alert;
+                              }
+                            );
+                          }
 
                         }
                       }, 
