@@ -36,6 +36,8 @@ dependencies:
   cupertino_icons: ^1.0.2
   # สำหรับทำหน้า onboarding screen
   introduction_screen: ^3.0.2
+  # สำหรับการเชื่อมต่อ web api
+  http: ^0.13.5
 
 dev_dependencies:
   flutter_test:
