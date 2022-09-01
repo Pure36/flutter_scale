@@ -1,5 +1,8 @@
+// ignore_for_file: unnecessary_null_comparison
+
 import 'dart:convert';
 
+import 'package:flutter_scale/models/NewsModel.dart';
 import 'package:http/http.dart' as http;
 
 class CallAPI {
@@ -30,5 +33,19 @@ class CallAPI {
       headers: _setHeaders()
     );
   }
+
+  // สร้างฟังก์ชันในการอ่านข่าวทั้งหมด
+  Future<List<NewsModel>?> getAllNews() async {
+    final response = await http.get(
+      Uri.parse(baseURLAPI+'news'),
+      headers: _setHeaders()
+    );
+    if(response.body != null) {
+      return newsModelFromJson(response.body);
+    }else{
+      return null;
+    }
+  }
+
 
 }

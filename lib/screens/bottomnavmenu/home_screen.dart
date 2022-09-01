@@ -1,6 +1,8 @@
-// ignore_for_file: prefer_const_constructors, use_key_in_widget_constructors
+// ignore_for_file: prefer_const_constructors, use_key_in_widget_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
+import 'package:flutter_scale/models/NewsModel.dart';
+import 'package:flutter_scale/services/rest_api.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -10,8 +12,78 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text('Home Screen'),
+    return RefreshIndicator(
+      onRefresh: () async {
+        setState(() { });
+      },
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Text(
+                'ข่าวประกาศล่าสุด',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+            ),
+            SizedBox(
+              height: 210,
+              child: Container(
+                width: double.infinity,
+                color: Colors.yellow,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Text(
+                'ข่าวประกาศทั้งหมด',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+            ),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.68,
+              child: FutureBuilder(
+                future: CallAPI().getAllNews(),
+                builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  if(snapshot.hasError){
+                    // ถ้าโหลดข้อมูลไมไ่ด้ หรือมีข้อผิดพลาด
+                    return Center(
+                      child: Text('มีข้อผิดพลาดในการโหลดข้อมูล'),
+                    );
+                  } else if(snapshot.connectionState == ConnectionState.done) {
+                    // ถ้าโหลดข้อมูลสำเร็จ
+                    List<NewsModel> news = snapshot.data;
+                    return ListView.builder(
+                      scrollDirection: Axis.vertical,
+                      // physics: NeverScrollableScrollPhysics(),
+                      itemCount: news.length,
+                      itemBuilder: (context, index) {
+                        
+                        // Load Model
+                        NewsModel newsModel = news[index];
+    
+                        // แสดงผลใน ListTile
+                        return ListTile(
+                          leading: Icon(Icons.pages),
+                          title: Text(newsModel.topic, overflow: TextOverflow.ellipsis,),
+                          subtitle: Text(newsModel.detail, overflow: TextOverflow.ellipsis,),
+                        );
+    
+                      }
+                    );
+                  } else {
+                    // ระหว่างที่กำลังโหลดข้อมูล สามารถใส่ loading...
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                }
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
