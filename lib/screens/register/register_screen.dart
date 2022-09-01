@@ -6,18 +6,18 @@ import 'package:flutter_scale/services/rest_api.dart';
 import 'package:flutter_scale/utils/utility.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class LoginScreen extends StatefulWidget {
+class RegisterScreen extends StatefulWidget {
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _RegisterScreenState extends State<RegisterScreen> {
 
   // สร้างตัวแปรไว้ผูกกับฟอร์ม
   final formKey = GlobalKey<FormState>();
 
   // สร้างตัวแปรไว้รับค่าจากฟอร์ม
-  late String _username, _password;
+  late String _fullname, _username, _password;
   
 
   @override
@@ -37,6 +37,24 @@ class _LoginScreenState extends State<LoginScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Image.asset('assets/images/mylogo.png', width: 150,),
+                    SizedBox(
+                      width: 200,
+                      child: TextFormField(
+                        decoration: InputDecoration(
+                          labelText: "Fullname"
+                        ),
+                        validator: (val) {
+                          if(val!.isEmpty){
+                            return 'ต้องป้อนชื่อ-สกุล';
+                          }else{
+                            return null;
+                          } 
+                        },
+                        onSaved: (val){
+                          _fullname = val.toString().trim();
+                        },
+                      ),
+                    ),
                     SizedBox(
                       width: 200,
                       child: TextFormField(
@@ -83,69 +101,51 @@ class _LoginScreenState extends State<LoginScreen> {
                             // เช็คว่าป้อนค่าในฟอร์มครบหรือไม่
                             if(formKey.currentState!.validate()) {
                               formKey.currentState!.save();
+                              
+                              // เรียกใช้งาน RegisterAPI
+                              var response = await CallAPI().registerAPI(
+                                {
+                                  "username": _username,
+                                  "password": _password,
+                                  "fullname": _fullname,
+                                  "status": "1"
+                                }
+                              );
       
-                              // print(_username);
-                              // print(_password);
-
-                              // เช็คว่ามีการเชื่อมต่อ Internet ไว้หรือไม่
-                              // print(await Utility.getInstance()!.checkNetwork());
-
-                              if(await Utility.getInstance()!.checkNetwork() == ""){
-                                
-                                Utility.getInstance()!.showAlertDialog(
-                                  context, 
-                                  "มีข้อผิดพลาด", 
-                                  "อุปกรณ์ของท่านยังไม่ได้เชื่อมต่อ Internet"
-                                );
-                                
-                              } else {
-
-                                // เรียกใช้งาน LoginAPI
-                                var response = await CallAPI().loginAPI(
-                                  {
-                                    "username": _username,
-                                    "password": _password
-                                  }
-                                );
-        
-                                var body = json.decode(response.body);
-        
-                                if(body['status'] == 'success'){
+                              var body = json.decode(response.body);
+      
+                              if(body['status'] == 'success'){
 
                                   // สร้าง Object แบบ SharedPreferences
                                   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 
                                   // เก็บค่าที่ต้องการลงในตัวแปรแบบ SharedPreferences
                                   sharedPreferences.setInt('userStep', 1);
-                                  sharedPreferences.setString('userID', body['data']['id']);
-                                  sharedPreferences.setString('userName', body['data']['username']);
-                                  sharedPreferences.setString('fullName', body['data']['fullname']);
-                                  sharedPreferences.setString('imgProfile', body['data']['img_profile']);
-
-                                  // ส่งไปหน้า Dashboard
-                                  Navigator.pushReplacementNamed(context, '/dashboard');
-                                }else{
-
-                                  Utility.getInstance()!.showAlertDialog(
-                                    context, 
-                                    "มีข้อผิดพลาด", 
-                                    "ข้อมูลเข้าระบบไม่ถูกต้อง"
-                                  );
+                                  sharedPreferences.setString('userName', _username);
+                                  sharedPreferences.setString('fullName', _fullname);
                                   
-                                }
+                                  Navigator.pushReplacementNamed(context, '/dashboard');
+
+                              }else{
+
+                                Utility.getInstance()!.showAlertDialog(
+                                  context, 
+                                  "มีข้อผิดพลาด", 
+                                  "ไม่สามารถลงทะเบียนได้"
+                                );
                               }
       
                             }
                           }, 
-                          child: Text("LOGIN")
+                          child: Text("Register")
                         ),
                       ),
                     ),
                     TextButton(
                       onPressed: (){
-                        Navigator.pushReplacementNamed(context, '/register');
+                        Navigator.pushReplacementNamed(context, '/login');
                       }, 
-                      child: Text("Not have account Register")
+                      child: Text("Already member ? Login")
                     )
                   ],
                 )

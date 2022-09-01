@@ -38,6 +38,10 @@ dependencies:
   introduction_screen: ^3.0.2
   # สำหรับการเชื่อมต่อ web api
   http: ^0.13.5
+  # สำหรับเช็คการเชื่อมต่อ network
+  connectivity_plus: ^2.3.6+1
+  # สำหรับเก็บค่าลงใน storage ของเครื่อง
+  shared_preferences: ^2.0.15
 
 dev_dependencies:
   flutter_test:

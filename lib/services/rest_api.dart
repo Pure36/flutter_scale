@@ -22,4 +22,13 @@ class CallAPI {
     );
   }
 
+  // สร้างฟังก์ชัน Register API
+  registerAPI(data) async {
+    return await http.post(
+      Uri.parse(baseURLAPI+'register'),
+      body: jsonEncode(data),
+      headers: _setHeaders()
+    );
+  }
+
 }

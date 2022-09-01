@@ -7,12 +7,20 @@ import 'package:flutter_scale/screens/bottomnavmenu/profile_screen.dart';
 import 'package:flutter_scale/screens/bottomnavmenu/report_screen.dart';
 import 'package:flutter_scale/screens/bottomnavmenu/setting_screen.dart';
 
+import 'package:shared_preferences/shared_preferences.dart';
+
 class DashboardScreen extends StatefulWidget {
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
+
+  // สร้าง Sharedpreference Object
+  late SharedPreferences sharedPreferences;
+
+  // สร้างตัวแปรเก็บ fullname, username, avatar
+  String? _fullname, _username, _avatar;
 
   // สร้างตัวแปรไว้เก็บลำดับที่ของ list
   int _currentIndex = 0;
@@ -42,6 +50,33 @@ class _DashboardScreenState extends State<DashboardScreen> {
       }
     });
   }
+
+  // สร้างฟังก์ชันในการอ่านข้อมูล User
+  readUserProfile() async {
+    sharedPreferences = await SharedPreferences.getInstance();
+    setState(() {
+      _fullname = sharedPreferences.getString("fullName");
+      _username = sharedPreferences.getString("userName");
+      _avatar = sharedPreferences.getString("imgProfile");
+    });
+  }
+
+  // เรียกใช้งานฟังก์ชัน initial
+  @override
+  void initState() {
+    super.initState();
+    readUserProfile();
+  }
+
+  // สร้างฟังก์ชันสำหรับการ Logout
+  logOut() async {
+    sharedPreferences = await SharedPreferences.getInstance();
+    // เคลียร์ค่า SharedPreferences
+    sharedPreferences.clear();
+    // ส่งไปหน้า Login
+    Navigator.pushReplacementNamed(context, '/login');
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -86,14 +121,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
         child: ListView(
           children: [
             UserAccountsDrawerHeader(
-              accountName: Text('Samit Koyom'), 
-              accountEmail: Text('samit@email.com'),
-              currentAccountPicture: CircleAvatar(
+              accountName: Text(_fullname ?? "..."), 
+              accountEmail: Text(_username ?? "..."),
+              currentAccountPicture: _avatar != null ? 
+              CircleAvatar(
                 radius: 60.0,
                 backgroundColor: Colors.green,
-                // backgroundImage: NetworkImage('https://www.itgenius.co.th/backend/assets/images/user_avatar/2qxyqud0ha7wj4nf6p26xxy0heoyyxkz.jpg'),
-               child: Image.asset('assets/images/smk.jpg'),
-              ),
+                backgroundImage: NetworkImage('https://www.itgenius.co.th/sandbox_api/mrta_flutter_api/public/images/profile/'+ _avatar!),
+              //  child: Image.asset('assets/images/smk.jpg'),
+              ) : CircularProgressIndicator(),
             ),
             ListTile(
               leading: Icon(Icons.info),
@@ -119,7 +155,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ListTile(
               leading: Icon(Icons.exit_to_app),
               title: Text('ออกจากระบบ'),
-              onTap: () { },
+              onTap: () async { 
+                logOut();
+              },
             )
           ],
         ),
