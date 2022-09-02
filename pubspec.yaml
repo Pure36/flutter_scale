@@ -42,6 +42,8 @@ dependencies:
   connectivity_plus: ^2.3.6+1
   # สำหรับเก็บค่าลงใน storage ของเครื่อง
   shared_preferences: ^2.0.15
+  # สำหรับแสดงผล Google Map API
+  google_maps_flutter: ^2.0.6
 
 dev_dependencies:
   flutter_test:

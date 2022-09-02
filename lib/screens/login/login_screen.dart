@@ -122,6 +122,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   sharedPreferences.setString('userName', body['data']['username']);
                                   sharedPreferences.setString('fullName', body['data']['fullname']);
                                   sharedPreferences.setString('imgProfile', body['data']['img_profile']);
+                                  sharedPreferences.setString('userStatus', body['data']['status']);
 
                                   // ส่งไปหน้า Dashboard
                                   Navigator.pushReplacementNamed(context, '/dashboard');

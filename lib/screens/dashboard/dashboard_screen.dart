@@ -6,7 +6,6 @@ import 'package:flutter_scale/screens/bottomnavmenu/notification_screen.dart';
 import 'package:flutter_scale/screens/bottomnavmenu/profile_screen.dart';
 import 'package:flutter_scale/screens/bottomnavmenu/report_screen.dart';
 import 'package:flutter_scale/screens/bottomnavmenu/setting_screen.dart';
-import 'package:flutter_scale/utils/utility.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -21,7 +20,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   late SharedPreferences sharedPreferences;
 
   // สร้างตัวแปรเก็บ fullname, username, avatar
-  String? _fullname, _username, _avatar;
+  String? _fullname, _username, _avatar, _userstatus;
 
   // สร้างตัวแปรไว้เก็บลำดับที่ของ list
   int _currentIndex = 0;
@@ -59,6 +58,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       _fullname = sharedPreferences.getString("fullName");
       _username = sharedPreferences.getString("userName");
       _avatar = sharedPreferences.getString("imgProfile");
+      _userstatus = sharedPreferences.getString("userStatus");
     });
   }
 
@@ -78,92 +78,125 @@ class _DashboardScreenState extends State<DashboardScreen> {
     Navigator.pushReplacementNamed(context, '/login');
   }
 
+  // ฟังก์ชันสำหรับเช็คการกดปุ่ม back
+  Future<bool> _onWillPop() async {
+    return (
+      await showDialog(
+        context: context,
+        builder: (context) => new AlertDialog(
+          title: new Text('Are you sure?'),
+          content: new Text('Do you want to exit an App'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: new Text('No'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: new Text('Yes'),
+            ),
+          ],
+        ),
+      )
+    ) ?? false;
+  }
+
   @override
   Widget build(BuildContext context) {
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(_title),
-      ),
-      body: _children[_currentIndex],
-      
-      // Menu Bottom Navigation
-      bottomNavigationBar: BottomNavigationBar(
-        onTap: onTabChange,
-        currentIndex: _currentIndex,
-        type: BottomNavigationBarType.fixed,
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            label: 'HOME'
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.show_chart_outlined),
-            label: 'REPORT'
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.notifications_outlined),
-            label: 'NOTIFICATION'
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings_outlined),
-            label: 'SETTING'
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            label: 'PROFILE'
-          ),
-        ]
-      ),
-      
-      // Menu Drawer
-      drawer: Drawer(
-        // backgroundColor: Colors.teal,
-        child: ListView(
-          children: [
-            UserAccountsDrawerHeader(
-              accountName: Text(_fullname ?? "..."), 
-              accountEmail: Text(_username ?? "..."),
-              currentAccountPicture: _avatar != null ? 
-              CircleAvatar(
-                radius: 60.0,
-                backgroundColor: Colors.green,
-                backgroundImage: NetworkImage('https://www.itgenius.co.th/sandbox_api/mrta_flutter_api/public/images/profile/'+ _avatar!),
-              //  child: Image.asset('assets/images/smk.jpg'),
-              ) : CircularProgressIndicator(),
-            ),
-            ListTile(
-              leading: Icon(Icons.info),
-              title: Text('เกี่ยวกับเรา'),
-              onTap: () {
-                Navigator.pushNamed(context, '/about');
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.book),
-              title: Text('ข้อมูลการใช้งาน'),
-              onTap: () { 
-                Navigator.pushNamed(context, '/info');
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.email),
-              title: Text('ติดต่อทีมงาน'),
-              onTap: () { 
-                Navigator.pushNamed(context, '/contact');
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.exit_to_app),
-              title: Text('ออกจากระบบ'),
-              onTap: () async { 
-                logOut();
-              },
-            )
-          ],
+    return WillPopScope(
+      onWillPop: _onWillPop,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(_title),
         ),
-      ),
+        body: _children[_currentIndex],
+        
+        // Menu Bottom Navigation
+        bottomNavigationBar: BottomNavigationBar(
+          onTap: onTabChange,
+          currentIndex: _currentIndex,
+          type: BottomNavigationBarType.fixed,
+          items: [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home_outlined),
+              label: 'HOME'
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.show_chart_outlined),
+              label: 'REPORT'
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.notifications_outlined),
+              label: 'NOTIFICATION'
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.settings_outlined),
+              label: 'SETTING'
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person_outline),
+              label: 'PROFILE'
+            ),
+          ]
+        ),
+        
+        // Menu Drawer
+        drawer: Drawer(
+          // backgroundColor: Colors.teal,
+          child: ListView(
+            children: [
+              UserAccountsDrawerHeader(
+                accountName: Text(_fullname ?? "..."), 
+                accountEmail: Text(_username ?? "..."),
+                currentAccountPicture: _avatar != null ? 
+                CircleAvatar(
+                  radius: 60.0,
+                  backgroundColor: Colors.green,
+                  backgroundImage: NetworkImage('https://www.itgenius.co.th/sandbox_api/mrta_flutter_api/public/images/profile/'+ _avatar!),
+                //  child: Image.asset('assets/images/smk.jpg'),
+                ) : CircularProgressIndicator(),
+              ),
     
+              _userstatus == "1" ?
+                ListTile(
+                  leading: Icon(Icons.info),
+                  title: Text('เกี่ยวกับเรา'),
+                  onTap: () {
+                    Navigator.pushNamed(context, '/about');
+                  },
+              ) : Container(),
+    
+              _userstatus == "1" ?
+              ListTile(
+                leading: Icon(Icons.book),
+                title: Text('ข้อมูลการใช้งาน'),
+                onTap: () { 
+                  Navigator.pushNamed(context, '/info');
+                },
+              ) : Container(),
+    
+              _userstatus == "1" ?
+              ListTile(
+                leading: Icon(Icons.email),
+                title: Text('ติดต่อทีมงาน'),
+                onTap: () { 
+                  Navigator.pushNamed(context, '/contact');
+                },
+              ) : Container(),
+    
+              ListTile(
+                leading: Icon(Icons.exit_to_app),
+                title: Text('ออกจากระบบ'),
+                onTap: () async { 
+                  logOut();
+                },
+              )
+            ],
+          ),
+        ),
+      
+      ),
     );
   }
 }
