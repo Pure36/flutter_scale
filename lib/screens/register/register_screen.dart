@@ -37,8 +37,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Image.asset('assets/images/mylogo.png', width: 150,),
+                    SizedBox(height: 30,),
                     SizedBox(
-                      width: 200,
+                      width: 250,
                       child: TextFormField(
                         decoration: InputDecoration(
                           labelText: "Fullname"
@@ -56,7 +57,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                     ),
                     SizedBox(
-                      width: 200,
+                      width: 250,
                       child: TextFormField(
                         decoration: InputDecoration(
                           labelText: "Username"
@@ -74,7 +75,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                     ),
                     SizedBox(
-                      width: 200,
+                      width: 250,
                       child: TextFormField(
                         obscureText: true,
                         decoration: InputDecoration(
@@ -95,7 +96,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     Padding(
                       padding: const EdgeInsets.only(top:10),
                       child: SizedBox(
-                        width: 200,
+                        width: 250,
                         child: ElevatedButton(
                           onPressed: () async {
                             // เช็คว่าป้อนค่าในฟอร์มครบหรือไม่

@@ -2,19 +2,19 @@
 
 import 'dart:convert';
 
-List<NewsModel> newsModelFromJson(String str) => List<NewsModel>.from(json.decode(str).map((x) => NewsModel.fromJson(x)));
+NewsDetailModel newsDetailModelFromJson(String str) => NewsDetailModel.fromJson(json.decode(str));
 
-String newsModelToJson(List<NewsModel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+String newsDetailModelToJson(NewsDetailModel data) => json.encode(data.toJson());
 
-class NewsModel {
-    NewsModel({
-       required this.id,
-       required this.topic,
-       required this.detail,
-       required this.imageurl,
-       required this.linkurl,
-       required this.createdAt,
-       required this.status,
+class NewsDetailModel {
+    NewsDetailModel({
+        required this.id,
+        required this.topic,
+        required this.detail,
+        required this.imageurl,
+        required this.linkurl,
+        required this.createdAt,
+        required this.status,
     });
 
     String id;
@@ -25,7 +25,7 @@ class NewsModel {
     DateTime? createdAt;
     String status;
 
-    factory NewsModel.fromJson(Map<String, dynamic> json) => NewsModel(
+    factory NewsDetailModel.fromJson(Map<String, dynamic> json) => NewsDetailModel(
         id: json["id"] == null ? null : json["id"],
         topic: json["topic"] == null ? null : json["topic"],
         detail: json["detail"] == null ? null : json["detail"],

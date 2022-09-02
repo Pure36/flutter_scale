@@ -1,11 +1,12 @@
-// ignore_for_file: prefer_const_constructors, use_key_in_widget_constructors, prefer_const_literals_to_create_immutables
-
+// ignore_for_file: prefer_const_constructors, use_key_in_widget_constructors, prefer_const_literals_to_create_immutables, unnecessary_new
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_scale/screens/bottomnavmenu/home_screen.dart';
 import 'package:flutter_scale/screens/bottomnavmenu/notification_screen.dart';
 import 'package:flutter_scale/screens/bottomnavmenu/profile_screen.dart';
 import 'package:flutter_scale/screens/bottomnavmenu/report_screen.dart';
 import 'package:flutter_scale/screens/bottomnavmenu/setting_screen.dart';
+import 'package:flutter_scale/utils/utility.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -77,9 +78,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
     Navigator.pushReplacementNamed(context, '/login');
   }
 
-
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
         title: Text(_title),
@@ -162,7 +163,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ],
         ),
       ),
-
+    
     );
   }
 }

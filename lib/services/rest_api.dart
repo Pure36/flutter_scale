@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 
+import 'package:flutter_scale/models/NewsDetailModel.dart';
 import 'package:flutter_scale/models/NewsModel.dart';
 import 'package:http/http.dart' as http;
 
@@ -42,6 +43,32 @@ class CallAPI {
     );
     if(response.body != null) {
       return newsModelFromJson(response.body);
+    }else{
+      return null;
+    }
+  }
+
+  // สร้างฟังก์ชันในการอ่านข่าวล่าสุด (5 ข่าว)
+  Future<List<NewsModel>?> getLastNews() async {
+    final response = await http.get(
+      Uri.parse(baseURLAPI+'lastnews'),
+      headers: _setHeaders()
+    );
+    if(response.body != null) {
+      return newsModelFromJson(response.body);
+    }else{
+      return null;
+    }
+  }
+
+  // สร้างฟังก์ชันอ่านรายละเอียดข่าว
+  Future<NewsDetailModel?> getNewsByID(id) async {
+    final response = await http.get(
+      Uri.parse(baseURLAPI+'news/'+id),
+      headers: _setHeaders()
+    );
+    if(response.body != null) {
+      return newsDetailModelFromJson(response.body);
     }else{
       return null;
     }

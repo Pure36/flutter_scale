@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_conditional_assignment, body_might_complete_normally_nullable, prefer_const_constructors, unused_local_variable
+// ignore_for_file: prefer_conditional_assignment, body_might_complete_normally_nullable, prefer_const_constructors, unused_local_variable, unnecessary_new, unused_element
 
 import 'package:flutter/material.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';

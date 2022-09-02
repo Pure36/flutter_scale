@@ -29,9 +29,80 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             SizedBox(
               height: 210,
-              child: Container(
-                width: double.infinity,
-                color: Colors.yellow,
+              child: FutureBuilder(
+                future: CallAPI().getLastNews(),
+                builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  if(snapshot.hasError){
+                    // ถ้าโหลดข้อมูลไมไ่ด้ หรือมีข้อผิดพลาด
+                    return Center(
+                      child: Text('มีข้อผิดพลาดในการโหลดข้อมูล'),
+                    );
+                  } else if(snapshot.connectionState == ConnectionState.done) {
+                    // ถ้าโหลดข้อมูลสำเร็จ
+                    List<NewsModel> news = snapshot.data;
+                    return ListView.builder(
+                      scrollDirection: Axis.horizontal, // ListView แนวนอน
+                      itemCount: news.length,
+                      itemBuilder: (context, index) {
+                        // Load Model
+                        NewsModel newsModel = news[index];
+                        // ส่วนการแสดงผลหน้าตา ListView
+                        return Container(
+                          width: MediaQuery.of(context).size.width * 0.60,
+                          child: InkWell(
+                            onTap: (){
+                              Navigator.pushNamed(
+                                context, 
+                                '/newsdetail',
+                                arguments: { 'id': newsModel.id }
+                              );
+                            },
+                            child: Card(
+                              child: Container(
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: 125.0,
+                                      decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                          image: NetworkImage(newsModel.imageurl),
+                                          fit: BoxFit.cover,
+                                          alignment: Alignment.topCenter
+                                        )
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Column(
+                                        children: [
+                                          Text(
+                                            newsModel.topic,
+                                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          Text(
+                                            newsModel.detail,
+                                            style: TextStyle(fontSize: 16),
+                                            overflow: TextOverflow.ellipsis,
+                                          )
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      }
+                    );
+                  } else {
+                    // ระหว่างที่กำลังโหลดข้อมูล สามารถใส่ loading...
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                },
               ),
             ),
             Padding(
@@ -68,6 +139,13 @@ class _HomeScreenState extends State<HomeScreen> {
                           leading: Icon(Icons.pages),
                           title: Text(newsModel.topic, overflow: TextOverflow.ellipsis,),
                           subtitle: Text(newsModel.detail, overflow: TextOverflow.ellipsis,),
+                          onTap: () {
+                            Navigator.pushNamed(
+                              context, 
+                              '/newsdetail',
+                              arguments: { 'id': newsModel.id }
+                            );
+                          },
                         );
     
                       }

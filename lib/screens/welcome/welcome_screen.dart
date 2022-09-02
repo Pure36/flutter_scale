@@ -18,7 +18,10 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   }
 
   Widget _buildImage(String assetName, [double width = 350]) {
-    return Image.asset('assets/images/$assetName', width: width);
+    return Padding(
+      padding: const EdgeInsets.only(top:50.0),
+      child: Image.asset('assets/images/$assetName', width: width),
+    );
   }
 
   @override
